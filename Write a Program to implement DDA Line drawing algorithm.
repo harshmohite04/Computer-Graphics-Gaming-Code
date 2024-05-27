@@ -1,0 +1,43 @@
+#include<stdio.h>
+#include<graphics.h>
+
+int main(){
+    int gd = DETECT, gm;
+    initgraph(&gd, &gm, "C:\\TURBOC3\\BGI");
+
+    int x1, y1, x2, y2;
+    printf("Enter x1 y1 x2 y2: ");
+    scanf("%d %d %d %d", &x1, &y1, &x2, &y2);
+
+    int delta_x = x2 - x1;
+    int delta_y = y2 - y1;
+
+    int xi = x1;
+    int yi = y1;
+    
+    float slope = (float) delta_y / delta_x;
+
+    if (abs(delta_x) >= abs(delta_y)) {
+        // Line is more horizontal
+        while (xi <= x2) {
+            putpixel(xi, yi, WHITE);
+            xi++;
+            yi += slope;
+            
+        }
+        getch();
+    } else {
+        // Line is more vertical
+        while (yi <= y2) {
+            putpixel(xi, yi, WHITE);
+            yi++;
+            xi += 1 / slope;
+            
+        }
+        getch();
+    }
+
+    getch();
+    closegraph();
+    return 0;
+}
