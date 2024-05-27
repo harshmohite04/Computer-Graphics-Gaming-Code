@@ -1,0 +1,73 @@
+#include <graphics.h>
+#include <conio.h>
+#include <stdio.h>
+
+// Function to multiply 3x3 matrices
+void multiplyMatrix(int mat1[3][3], int mat2[3][1], int result[3][1]) {
+    for (int i = 0; i < 3; i++) {
+        result[i][0] = 0;
+        for (int j = 0; j < 3; j++) {
+            result[i][0] += mat1[i][j] * mat2[j][0];
+        }
+    }
+}
+
+// Function to apply translation using matrix multiplication
+void applyTranslation(int x, int y, int tx, int ty, int *x_new, int *y_new) {
+    int point[3][1] = {{x}, {y}, {1}};
+    int translationMatrix[3][3] = {
+        {1, 0, tx},
+        {0, 1, ty},
+        {0, 0, 1}
+    };
+    int result[3][1];
+
+    multiplyMatrix(translationMatrix, point, result);
+
+    *x_new = result[0][0];
+    *y_new = result[1][0];
+}
+
+int main() {
+    int gd = DETECT, gm;
+    int x = 100, y = 100;  // Initial point
+    int tx1 = 50, ty1 = 30;  // First translation
+    int tx2 = 20, ty2 = 40;  // Second translation
+    int x_new1, y_new1, x_new2, y_new2;
+    int x_final, y_final;
+
+    // Initialize graphics mode
+    initgraph(&gd, &gm, "C:\\Turboc3\\BGI");
+
+    // Set background color and draw initial point
+    setbkcolor(WHITE);
+    setcolor(BLUE);
+    circle(x, y, 5);
+    outtextxy(x + 10, y, "Initial Point");
+
+    // First translation
+    applyTranslation(x, y, tx1, ty1, &x_new1, &y_new1);
+    setcolor(GREEN);
+    circle(x_new1, y_new1, 5);
+    outtextxy(x_new1 + 10, y_new1, "After First Translation");
+
+    // Second translation on the result of first translation
+    applyTranslation(x_new1, y_new1, tx2, ty2, &x_new2, &y_new2);
+    setcolor(RED);
+    circle(x_new2, y_new2, 5);
+    outtextxy(x_new2 + 10, y_new2, "After Second Translation");
+
+    // Combined translation
+    applyTranslation(x, y, tx1 + tx2, ty1 + ty2, &x_final, &y_final);
+    setcolor(BLACK);
+    circle(x_final, y_final, 5);
+    outtextxy(x_final + 10, y_final, "Combined Translation");
+
+    // Display the result
+    getch();
+
+    // Close the graph
+    closegraph();
+
+    return 0;
+}
