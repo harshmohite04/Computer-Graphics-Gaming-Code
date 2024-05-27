@@ -1,0 +1,104 @@
+#include <iostream>
+#include <graphics.h>
+#include <math.h>
+
+// Define the region codes
+ int INSIDE = 0; // 0000
+ int LEFT = 1;   // 0001
+ int RIGHT = 2;  // 0010
+ int BOTTOM = 4; // 0100
+ int TOP = 8;    // 1000
+
+// Define the screen size
+int X_MAX = 300;
+int Y_MAX = 300;
+ int X_MIN = 100;
+ int Y_MIN = 100;
+
+// Function to calculate region code for a point
+int computeCode(double x, double y) {
+    int code = INSIDE;
+
+    if (x < X_MIN)          // to the left of rectangle
+        code |= LEFT;
+    else if (x > X_MAX)     // to the right of rectangle
+        code |= RIGHT;
+    if (y < Y_MIN)          // below the rectangle
+        code |= BOTTOM;
+    else if (y > Y_MAX)     // above the rectangle
+        code |= TOP;
+
+    return code;
+}
+
+// Function to implement the midpoint line clipping algorithm
+void midPointClip(double x1, double y1, double x2, double y2) {
+    int code1 = computeCode(x1, y1);
+    int code2 = computeCode(x2, y2);
+    bool accept = false;
+
+    while (true) {
+        if ((code1 == 0) && (code2 == 0)) { // Both endpoints are inside the window
+            accept = true;
+            break;
+        } else if (code1 & code2) { // Both endpoints are outside the window
+            break;
+        } else { // Some segment of line lies within the window
+            int codeOut;
+            double x, y;
+
+            if (code1 != 0)
+                codeOut = code1;
+            else
+                codeOut = code2;
+
+            // Find intersection point
+            if (codeOut & TOP) { // point is above the clip rectangle
+                x = x1 + (x2 - x1) * (Y_MAX - y1) / (y2 - y1);
+                y = Y_MAX;
+            } else if (codeOut & BOTTOM) { // point is below the clip rectangle
+                x = x1 + (x2 - x1) * (Y_MIN - y1) / (y2 - y1);
+                y = Y_MIN;
+            } else if (codeOut & RIGHT) { // point is to the right of clip rectangle
+                y = y1 + (y2 - y1) * (X_MAX - x1) / (x2 - x1);
+                x = X_MAX;
+            } else if (codeOut & LEFT) { // point is to the left of clip rectangle
+                y = y1 + (y2 - y1) * (X_MIN - x1) / (x2 - x1);
+                x = X_MIN;
+            }
+
+            // Replace outside point with intersection point
+            if (codeOut == code1) {
+                x1 = x;
+                y1 = y;
+                code1 = computeCode(x1, y1);
+            } else {
+                x2 = x;
+                y2 = y;
+                code2 = computeCode(x2, y2);
+            }
+        }
+    }
+
+    if (accept) {
+        // Draw the line segment from (x1, y1) to (x2, y2)
+        line(x1, y1, x2, y2);
+    }
+}
+
+int main() {
+    int gd = DETECT, gm;
+    initgraph(&gd, &gm, "");
+
+    // Drawing the rectangle
+    rectangle(X_MIN, Y_MIN, X_MAX, Y_MAX);
+
+    // Drawing lines
+    midPointClip(50, 60, 400, 350);
+    midPointClip(200, 100, 600, 400);
+    midPointClip(50, 200, 500, 20);
+
+    delay(5000);
+    closegraph();
+    return 0;
+}
