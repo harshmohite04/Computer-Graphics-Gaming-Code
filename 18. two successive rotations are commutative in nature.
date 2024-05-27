@@ -1,0 +1,76 @@
+#include <graphics.h>
+#include <conio.h>
+#include <math.h>
+#include <stdio.h>
+
+// Function to multiply 3x3 matrices
+void multiplyMatrix(float mat1[3][3], float mat2[3][1], float result[3][1]) {
+    for (int i = 0; i < 3; i++) {
+        result[i][0] = 0;
+        for (int j = 0; j < 3; j++) {
+            result[i][0] += mat1[i][j] * mat2[j][0];
+        }
+    }
+}
+
+// Function to apply rotation using matrix multiplication
+void applyRotation(int x, int y, float angle, int *x_new, int *y_new) {
+    float rad = angle * M_PI / 180.0;
+    float point[3][1] = {{x}, {y}, {1}};
+    float rotationMatrix[3][3] = {
+        {cos(rad), -sin(rad), 0},
+        {sin(rad), cos(rad), 0},
+        {0, 0, 1}
+    };
+    float result[3][1];
+
+    multiplyMatrix(rotationMatrix, point, result);
+
+    *x_new = (int)result[0][0];
+    *y_new = (int)result[1][0];
+}
+
+int main() {
+    int gd = DETECT, gm;
+    int x = 200, y = 200;  // Initial point
+    float angle1 = 45;  // First rotation angle
+    float angle2 = 30;  // Second rotation angle
+    int x_new1, y_new1, x_new2, y_new2;
+    int x_final1, y_final1, x_final2, y_final2;
+
+    // Initialize graphics mode
+    initgraph(&gd, &gm, "C:\\Turboc3\\BGI");
+
+    // Set background color and draw initial point
+    setbkcolor(WHITE);
+    setcolor(BLUE);
+    circle(x, y, 5);
+    outtextxy(x + 10, y, "Initial Point");
+
+    // First rotation
+    applyRotation(x, y, angle1, &x_new1, &y_new1);
+    setcolor(GREEN);
+    circle(x_new1, y_new1, 5);
+    outtextxy(x_new1 + 10, y_new1, "After First Rotation");
+
+    // Second rotation on the result of first rotation
+    applyRotation(x_new1, y_new1, angle2, &x_new2, &y_new2);
+    setcolor(RED);
+    circle(x_new2, y_new2, 5);
+    outtextxy(x_new2 + 10, y_new2, "After Second Rotation");
+
+    // Reset point and do rotations in reverse order
+    applyRotation(x, y, angle2, &x_new1, &y_new1);
+    applyRotation(x_new1, y_new1, angle1, &x_final2, &y_final2);
+    setcolor(MAGENTA);
+    circle(x_final2, y_final2, 5);
+    outtextxy(x_final2 + 10, y_final2, "Reversed Rotations");
+
+    // Display the result
+    getch();
+
+    // Close the graph
+    closegraph();
+
+    return 0;
+}
