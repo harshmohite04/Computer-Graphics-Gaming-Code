@@ -1,0 +1,89 @@
+#include <iostream>
+#include <graphics.h>
+#include <math.h>
+
+// Function to draw a triangle
+void drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3) {
+    line(x1, y1, x2, y2);
+    line(x2, y2, x3, y3);
+    line(x3, y3, x1, y1);
+}
+
+// Function to perform matrix multiplication
+void multiplyMatrix(float a[3][3], float b[3][3], float result[3][3]) {
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            result[i][j] = 0;
+            for (int k = 0; k < 3; ++k) {
+                result[i][j] += a[i][k] * b[k][j];
+            }
+        }
+    }
+}
+
+// Function to reflect about the origin
+void reflectOrigin(int points[3][2]) {
+    float reflectionMatrix[3][3] = {{-1, 0, 0},
+                                    {0, -1, 0},
+                                    {0, 0, 1}};
+    for (int i = 0; i < 3; ++i) {
+        float point[3] = {points[i][0], points[i][1], 1};
+        float result[3] = {0};
+        for (int j = 0; j < 3; ++j) {
+            for (int k = 0; k < 3; ++k) {
+                result[j] += reflectionMatrix[j][k] * point[k];
+            }
+        }
+        points[i][0] = round(result[0]);
+        points[i][1] = round(result[1]);
+    }
+}
+
+// Function to reflect about the line Y = X
+void reflectYEqualsX(int points[3][2]) {
+    float reflectionMatrix[3][3] = {{0, 1, 0},
+                                    {1, 0, 0},
+                                    {0, 0, 1}};
+    for (int i = 0; i < 3; ++i) {
+        float point[3] = {points[i][0], points[i][1], 1};
+        float result[3] = {0};
+        for (int j = 0; j < 3; ++j) {
+            for (int k = 0; k < 3; ++k) {
+                result[j] += reflectionMatrix[j][k] * point[k];
+            }
+        }
+        points[i][0] = round(result[0]);
+        points[i][1] = round(result[1]);
+    }
+}
+
+int main() {
+    int gd = DETECT, gm;
+    initgraph(&gd, &gm, "");
+
+    // Coordinates of the triangle
+    int triangle[3][2] = {{100, 100}, {200, 200}, {300, 100}};
+
+    // Draw original triangle
+    drawTriangle(triangle[0][0], triangle[0][1],
+                 triangle[1][0], triangle[1][1],
+                 triangle[2][0], triangle[2][1]);
+
+    // Reflect about the origin
+    reflectOrigin(triangle);
+    setcolor(RED);
+    drawTriangle(triangle[0][0], triangle[0][1],
+                 triangle[1][0], triangle[1][1],
+                 triangle[2][0], triangle[2][1]);
+
+    // Reflect about the line Y = X
+    reflectYEqualsX(triangle);
+    setcolor(BLUE);
+    drawTriangle(triangle[0][0], triangle[0][1],
+                 triangle[1][0], triangle[1][1],
+                 triangle[2][0], triangle[2][1]);
+
+    getch();
+    closegraph();
+    return 0;
+}
