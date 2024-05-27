@@ -1,0 +1,89 @@
+#include <graphics.h>
+#include <conio.h>
+#include <math.h>
+#include <stdio.h>
+
+// Function to multiply 3x3 matrices
+void multiplyMatrix(float mat1[3][3], float mat2[3][1], float result[3][1]) {
+    for (int i = 0; i < 3; i++) {
+        result[i][0] = 0;
+        for (int j = 0; j < 3; j++) {
+            result[i][0] += mat1[i][j] * mat2[j][0];
+        }
+    }
+}
+
+// Function to apply a transformation using matrix multiplication
+void applyTransformation(int x, int y, float transformMatrix[3][3], int result[2]) {
+    float point[3][1] = {{x}, {y}, {1}};
+    float tempResult[3][1];
+
+    multiplyMatrix(transformMatrix, point, tempResult);
+
+    result[0] = (int)tempResult[0][0];
+    result[1] = (int)tempResult[1][0];
+}
+
+int main() {
+    int gd = DETECT, gm;
+    int x = 200, y = 100;  // Initial point
+    int reflected[2];
+    int rotated[2];
+    int finalResult[2];
+
+    // Initialize graphics mode
+    initgraph(&gd, &gm, "C:\\Turboc3\\BGI");
+
+    // Set background color and draw initial point
+    setbkcolor(WHITE);
+    setcolor(BLUE);
+    circle(x, y, 5);
+    outtextxy(x + 10, y, "Initial Point");
+    getch();
+    // Reflection matrix about the x-axis
+    float reflectMatrix[3][3] = {
+        {1, 0, 0},
+        {0, -1, 0},
+        {0, 0, 1}
+    };
+
+    // Rotation matrix for 90 degrees anticlockwise
+    float rotateMatrix[3][3] = {
+        {0, -1, 0},
+        {1, 0, 0},
+        {0, 0, 1}
+    };
+
+    // Combined transformation matrix for direct reflection about y=x
+    float combinedMatrix[3][3] = {
+        {0, 1, 0},
+        {1, 0, 0},
+        {0, 0, 1}
+    };
+
+    // Perform reflection about the x-axis
+    applyTransformation(x, y, reflectMatrix, reflected);
+    setcolor(GREEN);
+    circle(reflected[0], reflected[1], 5);
+    outtextxy(reflected[0] + 10, reflected[1], "Reflected Point");
+getch();
+    // Perform 90 degrees anticlockwise rotation on the reflected point
+    applyTransformation(reflected[0], reflected[1], rotateMatrix, rotated);
+    setcolor(RED);
+    circle(rotated[0], rotated[1], 5);
+    outtextxy(rotated[0] + 10, rotated[1], "Rotated Point");
+getch();
+    // Perform direct reflection about y=x
+    applyTransformation(x, y, combinedMatrix, finalResult);
+    setcolor(BLACK);
+    circle(finalResult[0], finalResult[1], 5);
+    outtextxy(finalResult[0] + 10, finalResult[1], "Direct Reflection y=x");
+
+    // Display the result
+    getch();
+
+    // Close the graph
+    closegraph();
+
+    return 0;
+}
