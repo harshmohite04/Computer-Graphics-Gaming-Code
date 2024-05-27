@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <graphics.h>
+#include <math.h>
+
+#define MAX_POINTS 10000
+
+// Structure to represent a point
+typedef struct {
+    int x, y;
+} Point;
+
+// Function to draw a line
+void drawLine(Point p1, Point p2) {
+    line(p1.x, p1.y, p2.x, p2.y);
+}
+
+// Function to generate fractal coastline
+void drawCoastline(Point p1, Point p2, int iterations) {
+    if (iterations == 0) {
+        drawLine(p1, p2);
+    } else {
+        Point mid;
+        mid.x = (p1.x + p2.x) / 2;
+        mid.y = (p1.y + p2.y) / 2;
+
+        int offset = rand() % 21 - 10; // Random offset for variation
+
+        mid.y += offset;
+
+        drawCoastline(p1, mid, iterations - 1);
+        drawCoastline(mid, p2, iterations - 1);
+    }
+}
+
+int main() {
+    int gd = DETECT, gm;
+    initgraph(&gd, &gm, "");
+
+    // Set initial points for coastline
+    Point p1, p2;
+    p1.x = 50;
+    p1.y = 300;
+    p2.x = 550;
+    p2.y = 300;
+
+    int iterations;
+
+    printf("Enter the number of iterations: ");
+    scanf("%d", &iterations);
+    if (iterations < 0) {
+        printf("Number of iterations cannot be negative.\n");
+        closegraph();
+        return 1;
+    }
+
+    drawCoastline(p1, p2, iterations);
+
+    getch();
+    closegraph();
+    return 0;
+}
