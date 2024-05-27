@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <graphics.h>
+
+#define MAX_POINTS 20
+
+// Structure to represent a point
+typedef struct {
+    int x, y;
+} Point;
+
+// Structure to represent an edge
+typedef struct {
+    Point start, end;
+} Edge;
+
+// Function to draw a polygon
+void drawPolygon(Point poly[], int n) {
+    int i;
+    for (i = 0; i < n; i++)
+        line(poly[i].x, poly[i].y, poly[(i + 1) % n].x, poly[(i + 1) % n].y);
+}
+
+// Function to clip a polygon against a clipping window
+void clipPolygon(Point poly[], int n, Point clip[], int m) {
+    int i, j;
+    Point pOut[MAX_POINTS];
+    Point *pIn = poly;
+    int inCount = n;
+
+    for (i = 0; i < m; i++) {
+        Point *pS = &clip[i];
+        Point *pE = &clip[(i + 1) % m];
+        Point pInTemp[MAX_POINTS];
+        int inCountTemp = 0;
+
+        for (j = 0; j < inCount; j++) {
+            Point *p1 = &pIn[j];
+            Point *p2 = &pIn[(j + 1) % inCount];
+
+            int pos1 = (p1->x - pS->x) * (pE->y - pS->y) - (p1->y - pS->y) * (pE->x - pS->x);
+            int pos2 = (p2->x - pS->x) * (pE->y - pS->y) - (p2->y - pS->y) * (pE->x - pS->x);
+
+            if (pos1 >= 0 && pos2 >= 0) {
+                pInTemp[inCountTemp] = *p2;
+                inCountTemp++;
+            } else if (pos1 < 0 && pos2 < 0) {
+                // No action
+            } else {
+                double t = (double) (pS->x * pE->y - pS->y * pE->x - pS->x * p1->y + pS->y * p1->x)
+                           / (double) ((pE->y - pS->y) * (p1->x - p2->x) - (pE->x - pS->x) * (p1->y - p2->y));
+                Point pInt;
+                pInt.x = p1->x + t * (p2->x - p1->x);
+                pInt.y = p1->y + t * (p2->y - p1->y);
+
+                pInTemp[inCountTemp] = pInt;
+                inCountTemp++;
+                pInTemp[inCountTemp] = *p2;
+                inCountTemp++;
+            }
+        }
+        inCount = inCountTemp;
+        for (j = 0; j < inCount; j++)
+            pIn[j] = pInTemp[j];
+    }
+
+    drawPolygon(pIn, inCount);
+}
+
+int main() {
+    int gd = DETECT, gm;
+    initgraph(&gd, &gm, "");
+
+    // Example polygon
+    Point poly[] = {{100, 100}, {300, 100}, {200, 300}};
+    int n = sizeof(poly) / sizeof(poly[0]);
+
+    // Clipping window
+    Point clip[] = {{150, 150}, {250, 150}, {250, 250}, {150, 250}};
+    int m = sizeof(clip) / sizeof(clip[0]);
+
+    // Drawing polygon and clipping window
+    drawPolygon(poly, n);
+    drawPolygon(clip, m);
+
+    // Clipping polygon against clipping window
+    clipPolygon(poly, n, clip, m);
+
+    getch();
+    closegraph();
+    return 0;
+}
