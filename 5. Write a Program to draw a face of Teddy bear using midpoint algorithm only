@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <graphics.h>
+
+void drawCircle(int xc,int yc,int r){
+
+	int y=r;
+	int x=0;
+	int d=1-y;
+	while(x<=y){
+		putpixel(xc+x,yc+y,WHITE);
+		putpixel(xc-x,yc+y,WHITE);
+		putpixel(xc+x,yc-y,WHITE);
+		putpixel(xc-x,yc-y,WHITE);
+		
+		putpixel(xc+y,yc+x,WHITE);
+		putpixel(xc-y,yc+x,WHITE);
+		putpixel(xc+y,yc-x,WHITE);
+		putpixel(xc-y,yc-x,WHITE);
+		if(d<=0){
+			
+			d+=2*x+3;
+		}
+		else{
+			y--;
+			d+=2*(x-y)+5;
+		}
+		x++;
+	}
+		
+}
+
+int main(){
+	int gd=DETECT,gm;
+	initgraph(&gd,&gm,"");
+
+	drawCircle(100,100,50);
+	drawCircle(200,85,10);	
+	
+	
+	getch();
+	closegraph();
+	return 0;
+}
