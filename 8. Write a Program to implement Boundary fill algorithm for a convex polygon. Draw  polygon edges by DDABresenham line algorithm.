@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <graphics.h>
+
+boundryFill(int x,int y, int f, int b){
+	if(getpixel(x,y)!=b && getpixel(x,y)!=f){
+		putpixel(x,y,f);
+		boundryFill(x+1,y,f,b);
+		boundryFill(x-1,y,f,b);
+		boundryFill(x,y+1,f,b);
+		boundryFill(x,y-1,f,b);
+		
+		boundryFill(x+1,y+1,f,b);
+		boundryFill(x-1,y+1,f,b);
+		boundryFill(x+1,y-1,f,b);
+		boundryFill(x-1,y-1,f,b);
+	}
+}
+
+drawLine(int x1, int y1, int x2, int y2){
+	int dx=abs(x2-x1),sx=x1<x2?1:-1;
+	int dy=abs(y2-y1),sy=y1<y2?1:-1;
+	int err=(dx<dy?dx:-dy)/2,e2;
+	while(1){
+		putpixel(x1,y1,WHITE);
+	if(x1==x2&&y1==y2)break;
+	e2=err;
+	if(e2>-dx){
+		err-=dy;
+		x1+=sx;
+	}
+	if(e2<dy){
+		err+=dx;
+		y1+=sy;
+	}
+}
+}
+
+int main(){
+	int gd=DETECT,gm;
+	initgraph(&gd,&gm,"");
+	
+	drawLine(100,100,100,200);
+	drawLine(100,200,200,200);
+	drawLine(200,200,200,100);
+	drawLine(200,100,100,100);
+	
+	boundryFill(150,150,GREEN,WHITE);
+	getch();
+	closegraph();
+	return 0;
+}
