@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include<math.h>
+#define PI 3.1415
+
+
+void multiply(double m1[2][2],double m2[2][2],double result[2][2]){
+	result[0][0]=m1[0][0]*m2[0][0]+m1[0][1]*m2[1][0];
+	result[0][1]=m1[0][0]*m2[0][1]+m1[0][1]*m2[1][1];
+	result[1][0]=m1[1][0]*m2[0][0]+m1[1][1]*m2[1][0];
+	result[1][1]=m1[1][0]*m2[0][1]+m1[1][1]*m2[1][1];
+}
+
+void printMatrix(double matrix[2][2]){
+	printf("[%.6f %.6f]\n[%.6f %.6f]",matrix[0][0],matrix[0][1],matrix[1][0],matrix[1][1]);
+}
+int main(){
+	double theta_1=45*PI/180;
+	double theta_2=30*PI/180;
+	
+	double R_theta1[2][2]={{cos(theta_1),-sin(theta_1)},{sin(theta_1),cos(theta_1)}};
+	double R_theta2[2][2]={{cos(theta_2),-sin(theta_2)},{sin(theta_2),cos(theta_2)}};
+	
+	double product1[2][2];
+	multiply(R_theta1,R_theta2,product1);
+	
+	double product2[2][2];
+	multiply(R_theta2,R_theta1,product2);
+	
+	
+	double theta_sum = theta_1 +theta_2;
+	double R_theta_sum[2][2]={{cos(theta_sum),-sin(theta_sum)},{sin(theta_sum),cos(theta_sum)}};
+	
+	printf("\ntheta 1\n");
+	printMatrix(R_theta1);
+	printf("\ntheta 2\n");
+	printMatrix(R_theta2);
+	
+	printf("\nR(theta) . r(theta)\n");
+	printMatrix(product1);
+	
+	printf("\nreverse\n");
+	printMatrix(product2);
+	
+	printf("\nSum\n");
+	printMatrix(R_theta_sum);
+	return 0;
+}
