@@ -1,0 +1,80 @@
+#include <stdio.h>
+#include <graphics.h>
+#include<math.h>
+#define MAX_POINTS 100
+
+// Structure to represent a point
+typedef struct {
+    int x, y;
+} Point;
+
+// Function to calculate binomial coefficient
+int binomialCoeff(int n, int k) {
+    int res = 1;
+    if (k > n - k)
+        k = n - k;
+    for (int i = 0; i < k; ++i) {
+        res *= (n - i);
+        res /= (i + 1);
+    }
+    return res;
+}
+
+// Function to calculate Bezier curve point
+Point bezier(Point* points, int n, double t) {
+    Point res = {0, 0};
+    for (int i = 0; i < n; ++i) {
+        int coeff = binomialCoeff(n - 1, i);
+        double term = coeff * pow(1 - t, n - 1 - i) * pow(t, i);
+        res.x += term * points[i].x;
+        res.y += term * points[i].y;
+    }
+    return res;
+}
+
+// Function to draw Bezier curve
+void drawBezier(Point* points, int n, int iterations) {
+    double delta = 1.0 / (double)(iterations + 1);
+    Point prev = points[0];
+    for (double t = delta; t <= 1.0; t += delta) {
+        Point next = bezier(points, n, t);
+        line(prev.x, prev.y, next.x, next.y);
+        prev = next;
+    }
+}
+
+int main() {
+    int gd = DETECT, gm;
+    initgraph(&gd, &gm, NULL);
+
+    int n, iterations;
+
+    printf("Enter the number of control points (minimum 2, maximum %d): ", MAX_POINTS);
+    scanf("%d", &n);
+    if (n < 2 || n > MAX_POINTS) {
+        printf("Invalid number of control points.\n");
+        closegraph();
+        return 1;
+    }
+
+    Point points[MAX_POINTS];
+    printf("Enter the coordinates of the control points:\n");
+    for (int i = 0; i < n; i++) {
+        printf("Point %d: ", i + 1);
+        scanf("%d %d", &points[i].x, &points[i].y);
+    }
+
+    printf("Enter the number of iterations: ");
+    scanf("%d", &iterations);
+    if (iterations < 0) {
+        printf("Number of iterations cannot be negative.\n");
+        closegraph();
+        return 1;
+    }
+
+    drawBezier(points, n, iterations);
+
+    getch();
+    closegraph();
+    return 0;
+}
