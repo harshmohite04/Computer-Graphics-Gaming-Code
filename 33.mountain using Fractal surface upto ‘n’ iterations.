@@ -1,0 +1,66 @@
+#include <stdio.h>
+#include <graphics.h>
+#include <math.h>
+#include <stdlib.h>
+
+#define MAX_POINTS 10000
+
+// Structure to represent a point
+typedef struct {
+    int x, y;
+} Point;
+
+// Function to draw a line
+void drawLine(Point p1, Point p2) {
+    line(p1.x, p1.y, p2.x, p2.y);
+}
+
+// Function to generate a fractal surface representing a mountain
+void drawMountain(Point p1, Point p2, int h, int iterations) {
+    if (iterations == 0) {
+        drawLine(p1, p2);
+    } else {
+        Point mid;
+        mid.x = (p1.x + p2.x) / 2;
+        mid.y = (p1.y + p2.y) / 2 - (rand() % h);
+
+        drawMountain(p1, mid, h / 2, iterations - 1);
+        drawMountain(mid, p2, h / 2, iterations - 1);
+    }
+}
+
+int main() {
+    int gd = DETECT, gm;
+    initgraph(&gd, &gm, "");
+
+    // Set initial points for mountain
+    Point p1, p2;
+    p1.x = 50;
+    p1.y = 300;
+    p2.x = 550;
+    p2.y = 300;
+
+    int height, iterations;
+
+    printf("Enter the height of the mountain: ");
+    scanf("%d", &height);
+    if (height < 0) {
+        printf("Height cannot be negative.\n");
+        closegraph();
+        return 1;
+    }
+
+    printf("Enter the number of iterations: ");
+    scanf("%d", &iterations);
+    if (iterations < 0) {
+        printf("Number of iterations cannot be negative.\n");
+        closegraph();
+        return 1;
+    }
+
+    drawMountain(p1, p2, height, iterations);
+
+    getch();
+    closegraph();
+    return 0;
+}
