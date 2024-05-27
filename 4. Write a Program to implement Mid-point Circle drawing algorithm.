@@ -1,0 +1,50 @@
+#include<stdio.h>
+#include<graphics.h>
+
+drawCircle(int xc,int yc,int x,int y){
+	putpixel(xc+x,yc+y,WHITE);	
+	putpixel(xc+x,yc-y,WHITE);
+	putpixel(xc-x,yc+y,WHITE);
+	putpixel(xc-x,yc-y,WHITE);
+	
+	putpixel(xc+y,yc+x,WHITE);
+	putpixel(xc-y,yc+x,WHITE);
+	putpixel(xc+y,yc-x,WHITE);
+	putpixel(xc-y,yc-x,WHITE);
+}
+int main(){
+	int gd=DETECT,gm;
+	initgraph(&gd,&gm,"");
+	
+	int r,xc,yc;
+	printf("Enter radius of circle");
+	scanf("%d",&r);
+	
+	printf("Enter the center cordinate xc yc");
+	scanf("%d %d",&xc,&yc);
+	
+	int y=r;
+	int x=0;
+	int d=1-y;
+	
+	while(x<=y){
+		drawCircle(xc,yc,x,y);
+		if(d<0){
+			
+			d+=2*x+3;
+		
+		}
+		else{
+				y--;
+			d+=2*(x-y)+5;
+			
+		}
+		x++;
+	}
+	
+
+getch();
+closegraph();
+	
+	return 0;
+}
