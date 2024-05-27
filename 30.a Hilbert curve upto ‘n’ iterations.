@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <graphics.h>
+#include <math.h>
+
+#define MAX_ITERATIONS 6
+#define MAX_POINTS 100000
+
+int x[MAX_POINTS];
+int y[MAX_POINTS];
+int count = 0;
+
+void drawLine(int x1, int y1, int x2, int y2) {
+    line(x1, y1, x2, y2);
+}
+
+void hilbertCurve(int iter, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3) {
+    if (iter <= 0) {
+        x[count] = x0;
+        y[count] = y0;
+        count++;
+        x[count] = x1;
+        y[count] = y1;
+        count++;
+        x[count] = x2;
+        y[count] = y2;
+        count++;
+        x[count] = x3;
+        y[count] = y3;
+        count++;
+    } else {
+        hilbertCurve(iter - 1, x0, y0, y0, x0, x1, y1, y1, x1);
+        hilbertCurve(iter - 1, x1, y1, x1, y1, y2, x2, x2, y2);
+        hilbertCurve(iter - 1, x2, y2, x2, y2, y3, x3, x3, y3);
+        hilbertCurve(iter - 1, x3, y3, y3, x3, x3, y0, y0, x0);
+    }
+}
+
+void drawHilbertCurve(int iter) {
+    int x0 = 100, y0 = 100, x1 = 500, y1 = 100, x2 = 500, y2 = 500, x3 = 100, y3 = 500;
+
+    hilbertCurve(iter, x0, y0, x1, y1, x2, y2, x3, y3);
+
+    for (int i = 0; i < count - 1; i++) {
+        drawLine(x[i], y[i], x[i + 1], y[i + 1]);
+    }
+}
+
+int main() {
+    int gd = DETECT, gm;
+    initgraph(&gd, &gm, NULL);
+
+    int iterations;
+    printf("Enter number of iterations (1 to %d): ", MAX_ITERATIONS);
+    scanf("%d", &iterations);
+    if (iterations < 1 || iterations > MAX_ITERATIONS) {
+        printf("Invalid input!\n");
+        return 1;
+    }
+
+    drawHilbertCurve(iterations);
+
+    getch();
+    closegraph();
+    return 0;
+}
